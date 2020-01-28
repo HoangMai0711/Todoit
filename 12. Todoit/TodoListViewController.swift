@@ -11,13 +11,22 @@ import UIKit
 class TodoListViewController: UITableViewController {
     
     var itemArray = ["eat", "sleep", "code"]
+    
+    let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+//
+//        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+//            itemArray = items
+//        }
+        if let items = defaults.object(forKey: "TodoListArray") as? [String] {
+            itemArray = items
+        }
     }
     
-    //MARK - Tableview Datasource Method
+    //MARK: - Tableview Datasource Method
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemArray.count
@@ -32,10 +41,10 @@ class TodoListViewController: UITableViewController {
         return cell
     }
 
-    //MARK - Tableview Delegate Method
+    //MARK: - Tableview Delegate Method
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //sprint(itemArray[indexPath.row])
+        //print(itemArray[indexPath.row])
         
         if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark{
             tableView.cellForRow(at: indexPath)?.accessoryType = .none
@@ -46,7 +55,7 @@ class TodoListViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
     }
 
-    //MARK - Add new items
+    //MARK: - Add new items
     
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
@@ -56,8 +65,13 @@ class TodoListViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New Todoit Item", message: "", preferredStyle: .alert)
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            //When add item button pressed, add item to itemArray and reload tableview to show item just added
             
             self.itemArray.append(textField.text!)
+            
+            self.defaults.set(self.itemArray, forKey: "TodoListArray")
+            
+            
             self.tableView.reloadData()
             
         }
@@ -67,7 +81,7 @@ class TodoListViewController: UITableViewController {
             
             textField = alertTextField
         }
-        
+
         alert.addAction(action)
         
         present(alert, animated: true, completion: nil)
